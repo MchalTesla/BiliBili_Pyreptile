@@ -1,5 +1,6 @@
 import pymysql
 
+
 class mysql_concat:
     _host = 'localhost'
     _port = 3306
@@ -16,18 +17,21 @@ class mysql_concat:
         self._password = password
         self._database = database
         try:
-            self._db = pymysql.connect(host=self._host, port=int(self._port), user=self._user, password=self._password, database=self._database)
+            self._db = pymysql.connect(host=self._host, port=int(self._port), user=self._user, password=self._password,
+                                       database=self._database)
             cursor = self._db.cursor()
             cursor.execute("SHOW TABLES")
             result = cursor.fetchall()
 
             if ('video',) not in result:
-                cursor.execute("CREATE TABLE video (id INT AUTO_INCREMENT PRIMARY KEY, bvid VARCHAR(16), aid VARCHAR(16), "
-                               "videourl VARCHAR(100), title VARCHAR(100), numberofvideo INT, numberofdanmu INT)")
+                cursor.execute(
+                    "CREATE TABLE video (id INT AUTO_INCREMENT PRIMARY KEY, bvid VARCHAR(16), aid VARCHAR(16), "
+                    "videourl VARCHAR(100), title VARCHAR(100), numberofvideo INT, numberofdanmu INT)")
 
             if ('danmu',) not in result:
-                cursor.execute("CREATE TABLE danmu (id INT AUTO_INCREMENT PRIMARY KEY, bvid VARCHAR(16), cid VARCHAR(16), "
-                               "danmu VARCHAR(255))")
+                cursor.execute(
+                    "CREATE TABLE danmu (id INT AUTO_INCREMENT PRIMARY KEY, bvid VARCHAR(16), cid VARCHAR(16), "
+                    "danmu VARCHAR(255))")
 
             self._state = True
             cursor.close()
@@ -36,7 +40,7 @@ class mysql_concat:
             self._state = False
 
     def __del__(self):
-        if(self._state):
+        if (self._state):
             self._db.close()
 
     def getstate(self):

@@ -1,14 +1,13 @@
-import requests
-from PyQt5.QtCore import QThread, pyqtSignal
-from fake_useragent import UserAgent
-from bs4 import BeautifulSoup
 import re
 import time
-import pandas as pd
-import user_agent
-from mysql_concat import mysql_concat
+
+import requests
+from PyQt5.QtCore import QThread, pyqtSignal
+from bs4 import BeautifulSoup
+
 from GetDanmu import GetDanmu
 from header import headers
+
 
 class ReptileThread(QThread):
     progress = pyqtSignal(int)
@@ -73,9 +72,10 @@ class ReptileThread(QThread):
                         cursor.execute(sql, values)
                         self.danmucount = self.danmucount + 1
 
-                    i = i+1
+                    i = i + 1
 
-            temp_progress_value = progress_value + ((i+1)*self.progress_step//find_num)
+            temp_progress_value = progress_value + ((i + 1) * self.progress_step // find_num)
             self.progress.emit(temp_progress_value)
+
     def stop(self):
         self.stop_flag = True

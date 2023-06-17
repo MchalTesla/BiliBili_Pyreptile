@@ -1,21 +1,16 @@
-import re
 import sys
-from concurrent.futures import thread
 
-from PyQt5.QtCore import QUrl, QObject, pyqtSignal, Qt, QThread
-from PyQt5.QtGui import QPixmap, QIcon, QFont, QTextCursor
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QAction, QListWidget, QLabel, QGridLayout, QDialog, \
-    QDialogButtonBox, QLineEdit, QMessageBox, qApp, QPushButton, QSpinBox, QTextEdit, QPlainTextEdit, QTableWidget, \
-    QHeaderView, QInputDialog, QTableWidgetItem, QTableView, QSizePolicy, QProgressBar
+from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QAction, QLabel, QGridLayout, QDialog, \
+    QDialogButtonBox, QLineEdit, QMessageBox, qApp, QPushButton, QSpinBox, QPlainTextEdit, QTableWidget, \
+    QHeaderView, QInputDialog, QTableWidgetItem, QProgressBar
 from fake_useragent import UserAgent
 
-from mysql_concat import mysql_concat
-from header import headers
-from reptile import ReptileThread
 from console import Console
-
-
+from header import headers
+from mysql_concat import mysql_concat
+from reptile import ReptileThread
 
 
 class OutputRedirect(QObject):
@@ -27,14 +22,15 @@ class OutputRedirect(QObject):
     def flush(self):
         pass
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.interval = 1
         self.reptile_thread = None
-        self.title = "自适应屏幕大小UI"
+        self.title = "Bilibili爬虫"
 
-        #获取显示器分辨率
+        # 获取显示器分辨率
         self.desktop = QApplication.desktop()
         self.screenRect = self.desktop.screenGeometry()
         self.screenheight = self.screenRect.height()
@@ -43,7 +39,7 @@ class MainWindow(QMainWindow):
         self.height = int(self.screenheight * 0.7)
         self.width = int(self.screenwidth * 0.7)
 
-        self.resize(self.width,self.height)
+        self.resize(self.width, self.height)
         self.wid = QWidget(self)
         self.setCentralWidget(self.wid)
         self.setWindowTitle(self.title)
@@ -75,7 +71,6 @@ class MainWindow(QMainWindow):
         self.statusBar().addPermanentWidget(self.progress_bar)
 
         self.wid.setLayout(self.layout)
-
 
     def initMenu(self):
         menubar = self.menuBar()
@@ -129,6 +124,7 @@ class MainWindow(QMainWindow):
 
     def showAboutDialog(self):
         QMessageBox.about(self, '关于', '这是由GPT-3.5辅助开发的，基于QT5框架的Bilibili简易爬虫应用。')
+
     def searchAllVideo(self):
         # 查询并显示所有视频数据
         self.progress_bar.setValue(0)
@@ -151,11 +147,11 @@ class MainWindow(QMainWindow):
         self.result_table.setColumnWidth(4, 750)
         self.result_table.setColumnWidth(5, 100)
         self.result_table.setRowCount(len(results))
-        self.status_label.setText("查询到了 "+str(len(results))+" 条数据")
+        self.status_label.setText("查询到了 " + str(len(results)) + " 条数据")
         self.result_table.setHorizontalHeaderLabels(
             ['ID', 'bvid', 'aid', '视频URL', '标题', '弹幕数'])  # 设置标题栏
         for i, row in enumerate(results):
-            self.progress_bar.setValue((i+1)*100//len(results))
+            self.progress_bar.setValue((i + 1) * 100 // len(results))
             for j, item in enumerate(row):
                 self.result_table.setItem(i, j, QTableWidgetItem(str(item)))
         self.progress_bar.setValue(100)
@@ -181,14 +177,15 @@ class MainWindow(QMainWindow):
         self.result_table.setColumnWidth(2, 120)
         self.result_table.setColumnWidth(3, 1200)
         self.result_table.setRowCount(len(results))
-        self.status_label.setText("查询到了 "+str(len(results))+" 条数据")
+        self.status_label.setText("查询到了 " + str(len(results)) + " 条数据")
         self.result_table.setHorizontalHeaderLabels(['ID', 'bvid', 'cid', '弹幕内容'])  # 设置标题栏
         for i, row in enumerate(results):
-            self.progress_bar.setValue((i+1)*100//len(results))
+            self.progress_bar.setValue((i + 1) * 100 // len(results))
             for j, item in enumerate(row):
                 self.result_table.setItem(i, j, QTableWidgetItem(str(item)))
         self.progress_bar.setValue(100)
         cursor.close()
+
     def searchNumber(self):
         self.progress_bar.setValue(0)
         if self.mysqlconcat is None or self.mysqlconcat.getstate() == False:
@@ -213,6 +210,7 @@ class MainWindow(QMainWindow):
         self.result_table.setItem(0, 0, QTableWidgetItem(str(dump[0])))
         self.result_table.setItem(0, 1, QTableWidgetItem(str(dump[1])))
         self.progress_bar.setValue(100)
+
     def searchDanmu(self):
         # 弹出输入框，让用户输入 bvid 或者 title，查询指定视频的弹幕数据
         self.progress_bar.setValue(0)
@@ -229,7 +227,8 @@ class MainWindow(QMainWindow):
                 return
             db = self.mysqlconcat.getdb()
             cursor = db.cursor()
-            cursor.execute("SELECT * FROM danmu WHERE bvid=%s OR bvid=(SELECT bvid FROM video WHERE title LIKE %s)", (keyword, '%' + keyword + '%',))
+            cursor.execute("SELECT * FROM danmu WHERE bvid=%s OR bvid=(SELECT bvid FROM video WHERE title LIKE %s)",
+                           (keyword, '%' + keyword + '%',))
             results = cursor.fetchall()
             self.result_table.setColumnCount(4)
             self.result_table.setColumnWidth(0, 100)
@@ -245,6 +244,7 @@ class MainWindow(QMainWindow):
                     self.result_table.setItem(i, j, QTableWidgetItem(str(item)))
             self.progress_bar.setValue(100)
             cursor.close()
+
     def initToolBar(self):
         # 创建工具栏
         toolbar = self.addToolBar('爬取')
@@ -313,7 +313,6 @@ class MainWindow(QMainWindow):
         if videocount == 0:
             print("尝试换一个User-Agent试试")
 
-
     def initBrowser(self):
         # 创建数据库管理界面
         self.result_table = QTableWidget(self)
@@ -352,7 +351,6 @@ class MainWindow(QMainWindow):
 
         # 将事件传递给父类处理
         return super().eventFilter(obj, event)
-
 
     def showDBParamsDialog(self):
         dialog = QDialog(self)
@@ -431,7 +429,9 @@ class MainWindow(QMainWindow):
         # Create line edits for each parameter
         referEdit = QLineEdit("https://www.google.com/", dialog)
         cookieEdit = QLineEdit(dialog)
-        userAgentEdit = QLineEdit("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36", dialog)
+        userAgentEdit = QLineEdit(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            dialog)
         intervalEdit = QLineEdit(str(self.interval), dialog)
 
         # Add labels and line edits to the form layout

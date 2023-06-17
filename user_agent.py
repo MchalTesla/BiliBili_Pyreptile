@@ -1,4 +1,5 @@
 import random
+
 # pc端的user-agent
 user_agent_pc = [
     # 谷歌
@@ -38,8 +39,10 @@ user_agent_phone = [
     'Mozilla/5.0.html (Linux; U; Android 3.0.html; en-us; Xoom Build/HRI39) AppleWebKit/534.13 (KHTML, like Gecko) Version/4.0.html Safari/534.13',
 ]
 
+
 def get_user_agent_pc():
     return random.choice(user_agent_pc)
+
 
 def get_user_agent_phone():
     return random.choice(user_agent_phone)

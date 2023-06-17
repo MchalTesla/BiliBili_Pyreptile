@@ -1,5 +1,8 @@
-import requests
 import re
+
+import requests
+
+
 class GetDanmu:
 
     def get_info(vid):
