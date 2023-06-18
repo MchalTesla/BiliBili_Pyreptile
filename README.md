@@ -1,0 +1,2 @@
+# 简易的BiliBili弹幕爬虫
+这是一个简易BiliBili弹幕爬虫程序
